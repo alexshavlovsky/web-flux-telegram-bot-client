@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Telegram Bot Client</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link data-th-href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link data-th-href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="row m-2">
+        <div class="col">
+            <textarea id="console" rows="10" style="width: 100%"></textarea>
+        </div>
+    </div>
+    <div class="row m-2">
+        <div class="col">
+            <label for="msg-input">Input your message here:</label>
+            <input id="msg-input" type="text" style="width: 100%">
+        </div>
+    </div>
+</div>
+<script data-th-src="@{/js/main.js}"></script>
+</body>
+</html>
