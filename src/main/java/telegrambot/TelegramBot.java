@@ -2,8 +2,6 @@ package telegrambot;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.ReplaySubject;
-import org.slf4j.Logger;
-import org.slf4j.event.SubstituteLoggingEvent;
 import telegrambot.apimodel.Chat;
 import telegrambot.apimodel.User;
 import telegrambot.httpclient.SpringWebClientEmbeddedMapper;
@@ -13,7 +11,7 @@ import telegrambot.pollingclient.LongPollingClient;
 import telegrambot.pollingclient.PollingClient;
 
 public class TelegramBot {
-    private final static RxLogger logger = RxLogger.newInstance();
+    private final RxLogger logger = RxLogger.newInstance();
 
     private final BotRepository botRepository;
     private final User botUser;
@@ -25,11 +23,11 @@ public class TelegramBot {
     public TelegramBot(String token) throws BotException {
         TokensRepository tokensRepository = new TokensRepository();
 
-        if (token == null) {
+        if (token == null || token.isEmpty()) {
             logger.info("Try to load a token from the file system...");
             token = tokensRepository.getMostRecentToken();
             if (token == null) throw new BotException(
-                    "Can't find any saved token.\nPlease provide an API token via command line argument.\nYou can get one from BotFather.");
+                    "Can't find any saved token.\nPlease provide an API token via URL path: http://localhost:8080/token/{telegram_bot_api_token}\nYou can get one from BotFather.");
         }
 
         pollingClient = new LongPollingClient(token, new SpringWebClientEmbeddedMapper(), logger);
@@ -52,7 +50,7 @@ public class TelegramBot {
         botRepository.getLatestChatOptional().ifPresent(latestChat$::onNext);
     }
 
-    public  Observable<String> logMessageObservable(){
+    public Observable<String> logMessageObservable() {
         return logger.loggingEventObservable().map(MessageFormatter::formatLoggingEvent);
     }
 

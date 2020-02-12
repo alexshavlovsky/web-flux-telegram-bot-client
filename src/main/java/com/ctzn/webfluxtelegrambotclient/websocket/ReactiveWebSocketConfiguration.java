@@ -4,29 +4,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
-import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 @Configuration
 public class ReactiveWebSocketConfiguration {
 
-    private ReactiveWebSocketHandler webSocketHandler;
+    private MessageHandler messageHandler;
 
-    public ReactiveWebSocketConfiguration(ReactiveWebSocketHandler webSocketHandler) {
-        this.webSocketHandler = webSocketHandler;
+    public ReactiveWebSocketConfiguration(MessageHandler messageHandler) {
+        this.messageHandler = messageHandler;
     }
 
     @Bean
     public HandlerMapping webSocketHandlerMapping() {
-        Map<String, WebSocketHandler> map = new HashMap<>();
-        map.put("/event-emitter", webSocketHandler);
-
         SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
         handlerMapping.setOrder(1);
-        handlerMapping.setUrlMap(map);
+        handlerMapping.setUrlMap(Collections.singletonMap("/messages/*", messageHandler));
         return handlerMapping;
     }
 

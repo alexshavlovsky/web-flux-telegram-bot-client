@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title>Telegram Bot Client</title>
     <meta charset="utf-8">
@@ -16,6 +16,9 @@
         <input class="form-control" id="msg-input" type="text">
     </div>
 </footer>
+<script th:inline="javascript">
+    let token = [[${token}]];
+</script>
 <script data-th-src="@{/js/main.js}"></script>
 </body>
 </html>

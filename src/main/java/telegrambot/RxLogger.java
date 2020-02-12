@@ -1,7 +1,6 @@
 package telegrambot;
 
 import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.ReplaySubject;
 import org.slf4j.event.EventRecodingLogger;
 import org.slf4j.event.SubstituteLoggingEvent;
@@ -12,7 +11,7 @@ import java.util.LinkedList;
 class RxLogger extends EventRecodingLogger {
 
     private static class RxQueue<T> extends LinkedList<T> {
-        PublishSubject<T> loggingEventSubject = PublishSubject.create();
+        ReplaySubject<T> loggingEventSubject = ReplaySubject.create();
 
         @Override
         public boolean add(T o) {
