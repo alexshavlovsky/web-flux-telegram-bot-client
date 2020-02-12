@@ -8,14 +8,14 @@ body {
     padding-bottom: 96px;
 }
 
+#console-container{
+    height: 100%;
+    overflow-y: auto;
+}
+
 .footer {
     position: absolute;
     bottom: 0;
     width: 100%;
     height: 64px;
-}
-
-textarea.form-control {
-    height: 100%;
-    resize: none;
 }
