@@ -2,7 +2,9 @@ package telegrambot;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.ReplaySubject;
+import org.slf4j.event.SubstituteLoggingEvent;
 import telegrambot.apimodel.Chat;
+import telegrambot.apimodel.Message;
 import telegrambot.apimodel.User;
 import telegrambot.httpclient.SpringWebClientEmbeddedMapper;
 import telegrambot.io.BotRepository;
@@ -14,7 +16,7 @@ public class TelegramBot {
     private final RxLogger logger = RxLogger.newInstance();
 
     private final BotRepository botRepository;
-    private final User botUser;
+    public final User botUser;
 
     private final PollingClient pollingClient;
 
@@ -50,11 +52,11 @@ public class TelegramBot {
         botRepository.getLatestChatOptional().ifPresent(latestChat$::onNext);
     }
 
-    public Observable<String> logMessageObservable() {
-        return logger.loggingEventObservable().map(MessageFormatter::formatLoggingEvent);
+    public Observable<SubstituteLoggingEvent> logMessageObservable() {
+        return logger.loggingEventObservable();
     }
 
-    public Observable<String> messageObservable(Observable<String> outgoingTextMessages) {
+    public Observable<Message> messageObservable(Observable<String> outgoingTextMessages) {
 
         Observable<Chat> latestChatObservable = latestChat$.distinctUntilChanged().takeUntil(outgoingTextMessages.lastElement().toObservable());
 
@@ -67,8 +69,6 @@ public class TelegramBot {
                                 .doOnNext(botRepository::saveMessage)
                                 .doOnNext(message -> latestChat$.onNext(message.getChat()))
                 )
-
-                .map(message -> MessageFormatter.formatMessage(message, botRepository, botUser))
 
                 .mergeWith(
                         latestChatObservable.map(MessageFormatter::formatChat)

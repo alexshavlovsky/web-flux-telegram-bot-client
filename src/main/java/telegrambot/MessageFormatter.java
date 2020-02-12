@@ -1,6 +1,8 @@
 package telegrambot;
 
+import com.ctzn.webfluxtelegrambotclient.websocket.Event;
 import org.joda.time.DateTime;
+import org.slf4j.event.Level;
 import org.slf4j.event.SubstituteLoggingEvent;
 import telegrambot.apimodel.Chat;
 import telegrambot.apimodel.Message;
@@ -11,7 +13,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-class MessageFormatter {
+public class MessageFormatter {
 
     private static int maxNameLength = -1;
 
@@ -38,7 +40,7 @@ class MessageFormatter {
     }
 
     static String formatName(User user) {
-        return joinNotNullNotBlank(user.getFirst_name(), user.getLast_name(), user.getUsername());
+        return joinNotNullNotBlank(user.getFirst_name()/*, user.getLast_name(), user.getUsername()*/);
     }
 
     static String formatChat(Chat chat) {
@@ -84,5 +86,28 @@ class MessageFormatter {
         String time = formatTime(new Date(e.getTimeStamp()));
         String message = formatLogMessage(e);
         return joinNotNullNotBlank(time, appendSpace(e.getLevel().toString(), 5), message);
+    }
+
+    public static Event fromLoggingEvent(SubstituteLoggingEvent e) {
+        String time = formatTime(new Date(e.getTimeStamp()));
+        String message = formatLogMessage(e);
+        String level = e.getLevel().toString();
+        return new Event("log", time, message, level, "", "");
+    }
+
+    public static Event fromMessage(Message message, User botUser) {
+        String name = formatName(message.getFrom());
+        String dir = formatDirection(message.getFrom(), botUser);
+        String time = formatTime(message.getDate());
+        String msgText = messageToText(message);
+        return new Event("msg", time, msgText, name, dir, "");
+    }
+
+    public static Event fromError(Throwable e) {
+        SubstituteLoggingEvent event = new SubstituteLoggingEvent();
+        event.setLevel(Level.ERROR);
+        event.setTimeStamp(new Date().getTime());
+        event.setMessage(e.getMessage());
+        return fromLoggingEvent(event);
     }
 }

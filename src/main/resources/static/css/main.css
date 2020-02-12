@@ -1,21 +1,44 @@
-html, body, .container {
+html, body {
     height: 100%;
     background: #eee;
 }
 
 body {
-    padding-top: 32px;
-    padding-bottom: 96px;
+    padding-top: 0;
+    padding-bottom: 64px;
 }
 
-#console-container{
+#console-container {
     height: 100%;
-    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .footer {
-    position: absolute;
-    bottom: 0;
     width: 100%;
+    position: fixed;
+    bottom: 0;
     height: 64px;
+    z-index: 2;
+}
+
+.shad {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .3);
+}
+
+.msg {
+    padding: 10px 20px;
+    border: 1px #bbb outset;
+}
+
+.msg-inc {
+    border-radius: 30px 20px 20px 0;
+    margin: 20px 30% 5px 0;
+    background: #fff;
+    text-align: right;
+}
+
+.msg-out {
+    margin: 20px 0 5px 30%;
+    border-radius: 20px 30px 0 20px;
+    background: #bfa;
 }
