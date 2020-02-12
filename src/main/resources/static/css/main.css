@@ -1,3 +1,20 @@
-#title{
-    margin:40px 0;
+html, body, .container {
+    height: 100%;
+    background: #eee;
+}
+
+body {
+    padding-top: 16px;
+    padding-bottom: 64px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 48px;
+}
+
+textarea.form-control {
+    height: 100%;
 }

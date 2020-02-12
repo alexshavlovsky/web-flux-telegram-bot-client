@@ -1,5 +1,4 @@
-
-var clientWebSocket = new WebSocket("ws://localhost:8080/event-emitter");
+let clientWebSocket = new WebSocket("ws://localhost:8080/event-emitter");
 clientWebSocket.onopen = function () {
     console.log("clientWebSocket.onopen", clientWebSocket);
 //    clientWebSocket.send("event-me-from-browser");
@@ -18,7 +17,17 @@ clientWebSocket.onmessage = function (error) {
 };
 
 function events(s) {
-    var el = document.getElementById('console');
+    let el = document.getElementById('console');
     el.value += "\n" + s;
     el.scrollTop = el.scrollHeight;
+}
+
+const node = document.getElementById("msg-input");
+node.addEventListener("keyup", sendOnEnter);
+
+function sendOnEnter(event) {
+    if (event.key === "Enter") {
+        clientWebSocket.send(node.value);
+        node.value="";
+    }
 }
