@@ -13,6 +13,12 @@ localhost:8080
 it will use the latest token and the most recent chat
 ```
 
+## Screenshot
+
+<p align="center">
+  <img src="screenshots/1_chat_screen.png?raw=true" width="360"/>
+</p>
+
 ## Technology Stack
 
 Component                      | Technology
