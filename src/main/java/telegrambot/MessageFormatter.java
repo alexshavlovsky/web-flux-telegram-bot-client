@@ -53,7 +53,7 @@ public class MessageFormatter {
     }
 
     private static String formatTime(Date date) {
-        return new DateTime(date).toString("HH:mm:ss");
+        return new DateTime(date).toString();
     }
 
     private static String messageToText(Message message) {
