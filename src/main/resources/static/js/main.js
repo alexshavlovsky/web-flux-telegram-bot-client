@@ -35,10 +35,10 @@ function sendOnEnter(event) {
 
 function url(s) {
     let l = window.location;
-    return ((l.protocol === "https:") ? "wss://" : "ws://") + l.hostname + (((l.port != 80) && (l.port != 443)) ? ":" + l.port : "") + l.pathname + s;
+    return ((l.protocol === "https:") ? "wss://" : "ws://") + l.hostname + (((l.port != 80) && (l.port != 443)) ? ":" + l.port : "") + s;
 }
 
-let wsClient = new WebSocket(url('messages/' + token));
+let wsClient = new WebSocket(url('/messages/' + token));
 wsClient.onopen = function () {
 };
 wsClient.onclose = function () {
