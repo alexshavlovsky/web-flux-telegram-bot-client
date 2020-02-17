@@ -11,7 +11,7 @@ import telegrambot.apimodel.User;
 public interface PollingClient {
     Single<User> getMe();
 
-    Single<Message> sendMessage(Chat chat, String textMessage);
+    Single<Message> sendMessage(String textMessage, Chat chat);
 
     Single<Update[]> getUpdates(String query);
 
