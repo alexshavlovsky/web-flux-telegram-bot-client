@@ -12,6 +12,8 @@ import telegrambot.io.TokensRepository;
 import telegrambot.pollingclient.LongPollingClient;
 import telegrambot.pollingclient.PollingClient;
 
+import java.util.concurrent.TimeUnit;
+
 public class TelegramBot {
     private final RxLogger logger = RxLogger.newInstance();
 
@@ -38,7 +40,7 @@ public class TelegramBot {
         else {
             logger.info("Validate a new token against Telegram API...");
             try {
-                botUser = pollingClient.getMe().blockingGet();
+                botUser = pollingClient.getMe().timeout(5, TimeUnit.SECONDS).blockingGet();
             } catch (Exception e) {
                 throw new BotException("Unable to validate token against Telegram API: " + e.getMessage(), e);
             }

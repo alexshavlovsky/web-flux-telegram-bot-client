@@ -1,13 +1,7 @@
 package com.ctzn.webfluxtelegrambotclient.websocket;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.subjects.PublishSubject;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
-import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.web.util.UriTemplate;
 import reactor.core.publisher.Flux;
@@ -17,25 +11,11 @@ import telegrambot.TelegramBot;
 
 import java.util.Map;
 
-import static telegrambot.MessageFormatter.*;
+import static com.ctzn.webfluxtelegrambotclient.websocket.BotEventsWebSocketConnectorAdapter.connect;
+import static com.ctzn.webfluxtelegrambotclient.websocket.ChatEvent.fromError;
 
 @Component
-@Scope("prototype")
 public class MessageHandler implements WebSocketHandler {
-
-    private static final ObjectMapper json = new ObjectMapper();
-
-    private static String toJson(Event event) {
-        try {
-            return json.writeValueAsString(event);
-        } catch (JsonProcessingException e) {
-            try {
-                return json.writeValueAsString(fromError(e));
-            } catch (JsonProcessingException ex) {
-                return "{}";
-            }
-        }
-    }
 
     private static String getPathParam(WebSocketSession webSocketSession, String uriTemplate, String key) {
         String path = webSocketSession.getHandshakeInfo().getUri().getPath();
@@ -46,20 +26,12 @@ public class MessageHandler implements WebSocketHandler {
 
     @Override
     public Mono<Void> handle(WebSocketSession webSocketSession) {
-        String token = getPathParam(webSocketSession, "/messages/{token}", "token");
         try {
-            PublishSubject<String> subject = PublishSubject.create();
+            String token = getPathParam(webSocketSession, "/messages/{token}", "token");
             TelegramBot bot = new TelegramBot(token);
-            Flux<String> messages = Flux.from(
-                    bot.logMessageObservable().map(e -> toJson(fromLoggingEvent(e)))
-                            .mergeWith(bot.messageObservable(subject).map(m -> toJson(fromMessage(m, bot.botUser))))
-                            .toFlowable(BackpressureStrategy.BUFFER)
-            );
-            return webSocketSession.send(messages
-                    .map(webSocketSession::textMessage))
-                    .and(webSocketSession.receive().map(WebSocketMessage::getPayloadAsText).doOnNext(subject::onNext));
+            return connect(bot, webSocketSession);
         } catch (BotException e) {
-            return webSocketSession.send(Mono.just(toJson(fromError(e))).concatWith(Flux.never())
+            return webSocketSession.send(Mono.just(fromError(e).asJson()).concatWith(Flux.never())
                     .map(webSocketSession::textMessage));
         }
     }

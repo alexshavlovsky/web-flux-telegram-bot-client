@@ -1,8 +1,6 @@
 package telegrambot;
 
-import com.ctzn.webfluxtelegrambotclient.websocket.Event;
 import org.joda.time.DateTime;
-import org.slf4j.event.Level;
 import org.slf4j.event.SubstituteLoggingEvent;
 import telegrambot.apimodel.Chat;
 import telegrambot.apimodel.Message;
@@ -39,7 +37,7 @@ public class MessageFormatter {
         return Arrays.stream(entries).filter(e -> e != null && !e.trim().isEmpty()).collect(Collectors.joining(" "));
     }
 
-    static String formatName(User user) {
+    public static String formatName(User user) {
         return joinNotNullNotBlank(user.getFirst_name()/*, user.getLast_name(), user.getUsername()*/);
     }
 
@@ -48,15 +46,15 @@ public class MessageFormatter {
                 chat.getUsername(), chat.getTitle(), "(" + chat.getId() + ")");
     }
 
-    private static String formatDirection(User messageUser, User botUser) {
+    public static String formatDirection(User messageUser, User botUser) {
         return botUser.equals(messageUser) ? ">" : "<";
     }
 
-    private static String formatTime(Date date) {
+    public static String formatTime(Date date) {
         return new DateTime(date).toString();
     }
 
-    private static String messageToText(Message message) {
+    public static String messageToText(Message message) {
         return message.getText() != null ?
                 message.getText() :
                 message.getCaption() != null ?
@@ -76,7 +74,7 @@ public class MessageFormatter {
         return String.format(f.replace("{}", "%s"), args);
     }
 
-    private static String formatLogMessage(SubstituteLoggingEvent e) {
+    public static String formatLogMessage(SubstituteLoggingEvent e) {
         Object[] args = e.getArgumentArray();
         if (args == null || args.length == 0) return e.getMessage();
         return formatParametrizedLogMessage(e.getMessage(), args);
@@ -86,28 +84,5 @@ public class MessageFormatter {
         String time = formatTime(new Date(e.getTimeStamp()));
         String message = formatLogMessage(e);
         return joinNotNullNotBlank(time, appendSpace(e.getLevel().toString(), 5), message);
-    }
-
-    public static Event fromLoggingEvent(SubstituteLoggingEvent e) {
-        String time = formatTime(new Date(e.getTimeStamp()));
-        String message = formatLogMessage(e);
-        String level = e.getLevel().toString();
-        return new Event("log", time, message, level, "", "");
-    }
-
-    public static Event fromMessage(Message message, User botUser) {
-        String name = formatName(message.getFrom());
-        String dir = formatDirection(message.getFrom(), botUser);
-        String time = formatTime(message.getDate());
-        String msgText = messageToText(message);
-        return new Event("msg", time, msgText, name, dir, "");
-    }
-
-    public static Event fromError(Throwable e) {
-        SubstituteLoggingEvent event = new SubstituteLoggingEvent();
-        event.setLevel(Level.ERROR);
-        event.setTimeStamp(new Date().getTime());
-        event.setMessage(e.getMessage());
-        return fromLoggingEvent(event);
     }
 }
