@@ -6,7 +6,7 @@ import org.slf4j.event.SubstituteLoggingEvent;
 import telegrambot.apimodel.Chat;
 import telegrambot.apimodel.Message;
 import telegrambot.apimodel.User;
-import telegrambot.httpclient.SpringWebClientEmbeddedMapper;
+import telegrambot.httpclient.NettyAsyncHttpClient;
 import telegrambot.io.BotRepository;
 import telegrambot.io.TokensRepository;
 import telegrambot.pollingclient.LongPollingClient;
@@ -34,7 +34,7 @@ public class TelegramBot {
                     "Can't find any saved token.\nPlease provide an API token via URL path: http://localhost:8080/token/{telegram_bot_api_token}\nYou can get one from BotFather.");
         }
 
-        pollingClient = new LongPollingClient(token, new SpringWebClientEmbeddedMapper(), logger);
+        pollingClient = new LongPollingClient(token, new NettyAsyncHttpClient(), logger);
 
         if (tokensRepository.containsToken(token)) botUser = tokensRepository.getUserForToken(token);
         else {
